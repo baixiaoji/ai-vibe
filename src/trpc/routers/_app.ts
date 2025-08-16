@@ -1,6 +1,15 @@
 import { z } from 'zod';
 import { baseProcedure, createTRPCRouter } from '../init';
+import { inngest } from '@/inngest/client';
 export const appRouter = createTRPCRouter({
+  hello: baseProcedure.input(z.object({ text: z.string() })).mutation(async (opts) => {
+    await inngest.send({
+      name: 'test/hello.world',
+      data: {
+        text: opts.input.text,
+      },
+    });
+  }),
   createAI: baseProcedure
     .input(
       z.object({

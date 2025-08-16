@@ -1,20 +1,24 @@
-import { getQueryClient, trpc } from '@/trpc/server';
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { Suspense } from 'react';
-import { Client } from './client'
+'use client'
+import { Button } from '@/components/ui/button';
+import { useTRPC } from '@/trpc/client';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 
 
 const Page = () => {
-  const queryClient = getQueryClient()
-  void queryClient.prefetchQuery(trpc.createAI.queryOptions({ text: "wys"}))
-
+    const trpc = useTRPC()
+    const invoke = useMutation(trpc.hello.mutationOptions({
+      onSuccess: () => {
+        toast.info('调用成功')
+      }
+    }))
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<p>loading...</p>}>
-        <Client />
-      </Suspense>
-    </HydrationBoundary>
+    <div className='p-4 max-w-7xl mx-auto'>
+      <Button onClick={() => invoke.mutate({ text: 'hello world' })}>
+        调用
+      </Button>
+    </div>
   );
 }
 
